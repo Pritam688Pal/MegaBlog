@@ -10,7 +10,7 @@ export class Service {
     this.client
       .setEndpoint(Conf.appWriteUrl)
       .setProject(Conf.appWriteProjectId);
-    this.databases = new databases(this.client);
+    this.databases = new Databases(this.client);
     this.bucket = new Storage(this.client);
   }
 

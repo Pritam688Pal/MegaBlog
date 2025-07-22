@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { logIn } from "../store/authSlice";
-import { Button, Input, Logo } from "./index.jsx";
+import { Button, Input, Logo } from "../components";
 import { useDispatch } from "react-redux";
 import authService from "../appWrite/auth.js";
 import { useForm } from "react-hook-form";
@@ -52,7 +52,7 @@ function Signup() {
                     {error && <p className="text-red-600 mt-8 text-center">{error}</p>}
                     <form onSubmit={handleSubmit(signup)}>
                          <div className="space-y-5">
-                              <Input type="text" placeholder="Enter your full name" label="Full Name: "  {...register, ("name", { required: true })} />
+                              <Input type="text" placeholder="Enter your full name" label="Full Name: "  {...register("name", { required: true })} />
                               <Input
                                    type="email"
                                    label="Email"
