@@ -17,7 +17,7 @@ function PostForm({ post }) {
         }
     });
     const navigate = useNavigate();
-    const userDate = useSelector(state => state.user.userDate);
+    const userDate = useSelector(state => state.userDate);
 
     const onSubmit = async (data) => {
         if (post) {
