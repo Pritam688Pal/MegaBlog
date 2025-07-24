@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 
 function AllPost() {
     const [posts, setPosts] = useState([]);
+    // console.log(posts);
     useEffect(() => {
         appWriteService.getPosts([]).then((posts) => {
             setPosts(posts.documents);
@@ -16,7 +17,7 @@ function AllPost() {
                 <div className="flex flex-wrap">
                     {
                         posts.map((post) => (
-                            <div className="p-2 w-1/4">
+                            <div className="p-2 w-1/4" key={post.$id}>
                                 <PostCard key={post.$id} post={post} />
                             </div>
                         ))

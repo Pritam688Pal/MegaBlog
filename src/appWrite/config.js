@@ -1,5 +1,13 @@
 import Conf from "../conf/Conf.js";
-import { Client, ID, Databases, Storage, Query } from "appwrite";
+import {
+  Client,
+  ID,
+  Databases,
+  Storage,
+  Query,
+  Permission,
+  Role,
+} from "appwrite";
 
 export class Service {
   client = new Client();
@@ -14,8 +22,9 @@ export class Service {
     this.bucket = new Storage(this.client);
   }
 
-  async createPost({ title, slug, content, featuredImage, status, userId }) {
+  async createPost({ title, slug, content, featuredIMG, status, userId }) {
     try {
+      // console.log(status);
       return await this.databases.createDocument(
         Conf.appWriteDataBaseId,
         Conf.appWriteCollectionId,
@@ -23,17 +32,17 @@ export class Service {
         {
           title,
           content,
-          featuredImage,
+          featuredIMG,
           status,
           userId,
         }
       );
     } catch (error) {
-      console.log("AppWrite :: createPost :: error", error);
+      console.log("Appwrite serive :: createPost :: error", error);
     }
   }
 
-  async updatePost(slug, { title, content, featuredImage, status, userId }) {
+  async updatePost(slug, { title, content, featuredIMG, status, userId }) {
     try {
       return await this.databases.updateDocument(
         Conf.appWriteDataBaseId,
@@ -42,7 +51,7 @@ export class Service {
         {
           title,
           content,
-          featuredImage,
+          featuredIMG,
           status,
         }
       );
@@ -79,9 +88,9 @@ export class Service {
     }
   }
 
-  async getPosts(query = [Query.equal("status", "active")]) {
+  async getPosts(query) {
     try {
-      return await this.databases.listDocuments(
+      return await this.databases.getDocument(
         Conf.appWriteDataBaseId,
         Conf.appWriteCollectionId,
         query
@@ -118,6 +127,7 @@ export class Service {
   }
 
   async getFilePreview(fileId) {
+    // console.log(fileId);
     return this.bucket.getFilePreview(Conf.appWriteBucketId, fileId);
   }
 }

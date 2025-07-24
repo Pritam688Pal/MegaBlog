@@ -1,21 +1,25 @@
-import React from 'react';
+import React, { useState } from 'react';
 import appWriteService from '../appWrite/config.js';
 import { Link } from 'react-router-dom';
 
 
-function Postcard({$id, title, featuredImage})  {
-
+function Postcard(post)  {
+    const [file, setFile] = useState(null);
+  // console.log(post.post);
+    appWriteService.getFilePreview(post.post.$id)
+    .then((file) => setFile(file));
+    
     return (
-      <Link to={`/post/${$id}`}>
+      <Link to={`/post/${post.post.$id}`}>
         <div className="w-full bg-gray-100 rounded-xl p-4">
           <div className="w-full justify-center mb-4">
             <img
-              src={appWriteService.getFilePreview(featuredImage)}
-              alt={title}
+              src={file}
+              alt={post.post.title}
               className="rounded-xl"
             />
           </div>
-          <h2 className="text-xl font-bold mb-2">{title}</h2>
+          <h2 className="text-xl font-bold mb-2">{post.post.title}</h2>
         </div>
       </Link>
     );

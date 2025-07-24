@@ -1,13 +1,21 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button, Input, Select, RTE } from "../index.js";
-import AppWriteService from "../../appWrite/config.js";
+import appwriteService from "../../appWrite/config.js";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 
 
 function PostForm({ post }) {
+    // console.log(post);
+    const userData = useSelector(state => {
+        // console.log(state);
+
+        return state.userData
+    });
+    // console.log(userDate);
+
     const { register, handleSubmit, watch, setValue, control, getValues } = useForm({
         defaultValues: {
             title: post?.title || "",
@@ -17,37 +25,54 @@ function PostForm({ post }) {
         }
     });
     const navigate = useNavigate();
-    const userDate = useSelector(state => state.userDate);
-
+    const [content, setContent] = useState(post?.content || "");
+    const editorRef = useRef(null);
+    const log = () => {
+        console.log(content.getContent());
+    };
     const onSubmit = async (data) => {
+        // console.log(data);
         if (post) {
-            const file = data.image[0] ? AppWriteService.uploadFile(data.image[0]) : null;
+            const file = data.image[0] ? await appwriteService.uploadFile(data.image[0]) : null;
+
             if (file) {
-                AppWriteService.deleteFile(post.featuredImage)
+                appwriteService.deleteFile(post.featuredImage);
             }
-            const dbPost = await AppWriteService.updatePost(post.$id, {
+            data.content = content.getContent();
+            console.log(data);
+            const dbPost = await appwriteService.updatePost(post.$id, {
                 ...data,
-                featuredImage: file ? file.$id : undefined,
+                featuredIMG: file ? file.$id : undefined,
             });
+
             if (dbPost) {
-                navigate(`/posts/${dbPost.$id}`);
+                navigate(`/post/${dbPost.$id}`);
             }
         } else {
-            const file = data.image[0] && AppWriteService.uploadFile(data.image[0]);
+            const file = await appwriteService.uploadFile(data.image[0]);
+
             if (file) {
-                const fileId = file.$id
-                data.image = fileId
-                const dbPost = await AppWriteService.createPost({ ...data, userId: userDate.$id });
+                const fileId = file.$id;
+                data.featuredIMG = fileId;
+                data.userId = userData.$id;
+                data.content = content.getContent();
+                // console.log(data);
+                const dbPost = await appwriteService.createPost(
+                    { ...data }
+                );
+                // console.log(dbPost);
                 if (dbPost) {
-                    navigate(`/posts/${dbPost.$id}`);
+                    navigate(`/post/${dbPost.$id}`);
                 }
             }
         }
-    }
+    };
 
     const slugTransform = useCallback((value) => {
         if (value && typeof value === "string") {
-            return value.trim().toLowerCase().replace(/[a-zA-Z\d\s]+/g, "-").replace(/\s+/g, "-");
+            return value.trim().toLowerCase()
+                .replace(/[^a-zA-Z\d\s]+/g, "-")
+                .replace(/\s/g, "-");
         }
         return "";
     }, [])
@@ -82,7 +107,8 @@ function PostForm({ post }) {
                         setValue("slug", slugTransform(e.currentTarget.value), { shouldValidate: true });
                     }}
                 />
-                <RTE label="Content :" name="content" control={control} defaultValue={getValues("content")} />
+                <RTE label="Content :" name="content" control={control} defaultValue={getValues("content")} setContent={setContent} />
+                {/* <button onClick={log}>Log editor content</button> */}
             </div>
             <div className="w-1/3 px-2">
                 <Input
@@ -95,7 +121,7 @@ function PostForm({ post }) {
                 {post && (
                     <div className="w-full mb-4">
                         <img
-                            src={appwriteService.getFilePreview(post.featuredImage)}
+                            src={appwriteService.getFilePreview(post.$id)}
                             alt={post.title}
                             className="rounded-lg"
                         />

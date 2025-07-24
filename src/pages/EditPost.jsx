@@ -10,9 +10,11 @@ function EditPost() {
     
     useEffect(() => {
         if (slug){
-            appWriteService.getPostBySlug(slug.slug)
-           .then((post) => {
-                if(post) setPost(post);
+            // console.log(slug.slug);
+            appWriteService.getPosts(slug.slug)
+           .then((p) => {
+                // console.log(p);
+                if(p) setPost(p);
            })
         } else {
             Navigate('./');

@@ -19,15 +19,15 @@ import {RouterProvider} from 'react-router-dom'
 const router = createBrowserRouter([
   {
     path: '/',
-    component: <App />,
+    element: <App />,
     children: [
       {
         path: "/",
         element: <Home />,
       },
       {
-        path: '/Login',
-        component: (
+        path: '/login',
+        element: (
           <AuthLayout authentication={false}>
             <Login />
           </AuthLayout>
